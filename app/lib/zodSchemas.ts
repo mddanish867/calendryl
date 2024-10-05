@@ -1,4 +1,5 @@
 import { conformZodMessage } from "@conform-to/zod";
+import { url } from "inspector";
 import { z } from "zod";
 
 export const OnBoardingSchema = z.object({
@@ -52,3 +53,12 @@ export const settingsSchema = z.object({
 fullName: z.string().min(3).max(150),
 profileImage: z.string(),
 });
+
+
+export const eventTypeSchema = z.object({
+  title: z.string().min(3).max(150),
+  duration: z.string().min(1).max(60),
+  url: z.string().min(3).max(150),
+  description: z.string().min(3).max(300),
+  videoCallSoftware: z.string().min(3),
+})

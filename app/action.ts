@@ -4,6 +4,7 @@ import prisma from "./lib/db";
 import { requireUser } from "./lib/hooks";
 import { parseWithZod } from "@conform-to/zod";
 import {
+  eventTypeSchema,
   onBoradingUniqueUsernameValidation,
   settingsSchema,
 } from "./lib/zodSchemas";
@@ -139,8 +140,32 @@ export async function updateAvailabilityAction(formData: FormData) {
         })
       )
     );
-    revalidatePath("/dashboard/availability")
+    revalidatePath("/dashboard/availability");
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function CreateEventType(prevState:any,formData:FormData){
+  const session = requireUser();
+
+  const submission = parseWithZod(formData, {
+schema: eventTypeSchema,
+  });
+
+  if(submission.status !== "success"){
+    return submission.reply();
+  }
+
+  await prisma.eventType.create({
+    data: {
+      title: submission.value.title,
+      duration: submission.value.duration,
+      url: submission.value.url,
+      description: submission.value.description,
+      videoCallSoftware: submission.value.videoCallSoftware,
+      userId: (await session).user?.id as string
+    },
+  });
+  return redirect("/dashboard")
 }
